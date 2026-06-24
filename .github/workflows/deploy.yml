@@ -1,12 +1,14 @@
-name: Deploy to S3
+name: Deploy Static Website to S3
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
+    name: Deploy to AWS S3
     runs-on: ubuntu-latest
 
     steps:
@@ -20,9 +22,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.ACCESS_KEY_SECRET }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Upload Website to S3
+      - name: Sync Website to S3
         run: |
           aws s3 sync . s3://${{ secrets.S3_BUCKET }} \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*"
+
+      - name: Deployment Complete
+        run: echo "Website deployed successfully to S3"
